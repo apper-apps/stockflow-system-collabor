@@ -1,0 +1,98 @@
+[
+  {
+    "Id": 1,
+    "name": "Wireless Headphones Pro",
+    "sku": "WHP-001",
+    "description": "Premium wireless headphones with noise cancellation",
+    "category": "Electronics",
+    "currentStock": 45,
+    "minimumStock": 10,
+    "unitPrice": 299.99,
+    "location": "Warehouse A - Electronics",
+    "lastUpdated": "2024-01-15T10:30:00Z"
+  },
+  {
+    "Id": 2,
+    "name": "Gaming Mouse RGB",
+    "sku": "GM-002",
+    "description": "High-precision gaming mouse with RGB lighting",
+    "category": "Electronics",
+    "currentStock": 8,
+    "minimumStock": 15,
+    "unitPrice": 89.99,
+    "location": "Warehouse A - Gaming",
+    "lastUpdated": "2024-01-14T15:45:00Z"
+  },
+  {
+    "Id": 3,
+    "name": "Organic Coffee Beans",
+    "sku": "OCB-003",
+    "description": "Premium organic coffee beans from Colombia",
+    "category": "Food & Beverage",
+    "currentStock": 120,
+    "minimumStock": 30,
+    "unitPrice": 24.99,
+    "location": "Warehouse B - Food",
+    "lastUpdated": "2024-01-16T09:15:00Z"
+  },
+  {
+    "Id": 4,
+    "name": "Yoga Mat Premium",
+    "sku": "YM-004",
+    "description": "Eco-friendly premium yoga mat with carrying strap",
+    "category": "Sports & Fitness",
+    "currentStock": 0,
+    "minimumStock": 5,
+    "unitPrice": 49.99,
+    "location": "Warehouse C - Sports",
+    "lastUpdated": "2024-01-13T12:00:00Z"
+  },
+  {
+    "Id": 5,
+    "name": "LED Desk Lamp",
+    "sku": "LDL-005",
+    "description": "Adjustable LED desk lamp with touch controls",
+    "category": "Home & Office",
+    "currentStock": 25,
+    "minimumStock": 10,
+    "unitPrice": 79.99,
+    "location": "Warehouse D - Home",
+    "lastUpdated": "2024-01-15T14:20:00Z"
+  },
+  {
+    "Id": 6,
+    "name": "Smartphone Case Clear",
+    "sku": "SCC-006",
+    "description": "Crystal clear protective case for smartphones",
+    "category": "Electronics",
+    "currentStock": 3,
+    "minimumStock": 20,
+    "unitPrice": 19.99,
+    "location": "Warehouse A - Accessories",
+    "lastUpdated": "2024-01-16T11:30:00Z"
+  },
+  {
+    "Id": 7,
+    "name": "Stainless Steel Water Bottle",
+    "sku": "SSWB-007",
+    "description": "Insulated stainless steel water bottle 32oz",
+    "category": "Sports & Fitness",
+    "currentStock": 67,
+    "minimumStock": 25,
+    "unitPrice": 34.99,
+    "location": "Warehouse C - Accessories",
+    "lastUpdated": "2024-01-14T16:45:00Z"
+  },
+  {
+    "Id": 8,
+    "name": "Bluetooth Speaker Portable",
+    "sku": "BSP-008",
+    "description": "Waterproof portable Bluetooth speaker",
+    "category": "Electronics",
+    "currentStock": 18,
+    "minimumStock": 12,
+    "unitPrice": 129.99,
+    "location": "Warehouse A - Audio",
+    "lastUpdated": "2024-01-15T13:10:00Z"
+  }
+]

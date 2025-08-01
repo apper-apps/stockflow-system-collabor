@@ -15,6 +15,7 @@ const Button = forwardRef(({
     secondary: "bg-white hover:bg-slate-50 text-slate-700 border border-slate-300 focus:ring-primary-500 shadow-sm hover:shadow-md",
     ghost: "hover:bg-slate-100 text-slate-700 focus:ring-primary-500",
     danger: "bg-red-500 hover:bg-red-600 text-white focus:ring-red-500 shadow-sm hover:shadow-md",
+    outline: "border border-slate-300 bg-transparent hover:bg-slate-50 text-slate-700 focus:ring-primary-500",
   };
   
   const sizes = {

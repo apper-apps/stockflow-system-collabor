@@ -4,6 +4,66 @@ import mockProducts from '@/services/mockData/products.json';
 // Create a mutable copy of the mock data
 let products = [...mockProducts];
 
+// Mock transaction history data
+const transactionHistory = [
+  {
+    Id: 1,
+    productId: 1,
+    adjustment: 50,
+    reason: 'Initial Stock',
+    notes: 'Initial inventory setup',
+    timestamp: '2024-01-10T09:00:00Z'
+  },
+  {
+    Id: 2,
+    productId: 1,
+    adjustment: -12,
+    reason: 'Sale',
+    notes: 'Bulk order to corporate client',
+    timestamp: '2024-01-12T14:30:00Z'
+  },
+  {
+    Id: 3,
+    productId: 1,
+    adjustment: 25,
+    reason: 'Restock',
+    notes: 'Quarterly reorder',
+    timestamp: '2024-01-14T11:15:00Z'
+  },
+  {
+    Id: 4,
+    productId: 2,
+    adjustment: 100,
+    reason: 'Initial Stock',
+    notes: 'New product launch inventory',
+    timestamp: '2024-01-08T10:00:00Z'
+  },
+  {
+    Id: 5,
+    productId: 2,
+    adjustment: -8,
+    reason: 'Damaged Goods',
+    notes: 'Water damage during storage',
+    timestamp: '2024-01-11T16:45:00Z'
+  },
+  {
+    Id: 6,
+    productId: 3,
+    adjustment: 75,
+    reason: 'Initial Stock',
+    notes: 'Seasonal preparation',
+    timestamp: '2024-01-09T08:30:00Z'
+  },
+  {
+    Id: 7,
+    productId: 3,
+    adjustment: -15,
+    reason: 'Return to Supplier',
+    notes: 'Quality control issues',
+    timestamp: '2024-01-13T13:20:00Z'
+  }
+];
+
 // Helper function to get next ID
 const getNextId = () => {
   return products.length > 0 ? Math.max(...products.map(p => p.Id)) + 1 : 1;
@@ -115,6 +175,18 @@ export const deleteProduct = (id) => {
   return true;
 };
 
+export const getTransactionHistory = async (productId) => {
+  // Simulate API delay
+  await new Promise(resolve => setTimeout(resolve, 300));
+  
+  // Filter transactions by product ID and sort by timestamp (most recent first)
+  const productTransactions = transactionHistory
+    .filter(transaction => transaction.productId === productId)
+    .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+    
+  return [...productTransactions];
+};
+
 export const adjustStock = (productId, adjustment, reason, notes = '') => {
   const productIndex = products.findIndex(p => p.Id === productId);
   if (productIndex === -1) {
@@ -134,6 +206,17 @@ export const adjustStock = (productId, adjustment, reason, notes = '') => {
     currentStock: newStock,
     lastUpdated: new Date().toISOString()
   };
+
+  // Add transaction to history
+  const maxId = Math.max(...transactionHistory.map(t => t.Id), 0);
+  transactionHistory.push({
+    Id: maxId + 1,
+    productId: productId,
+    adjustment: adjustment,
+    reason: reason,
+    notes: notes,
+    timestamp: new Date().toISOString()
+  });
 
   // Log the adjustment (in a real app, this would go to an audit log)
   console.log(`Stock adjusted for ${product.name}: ${adjustment > 0 ? '+' : ''}${adjustment} (Reason: ${reason})`);

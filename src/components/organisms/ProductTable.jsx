@@ -3,12 +3,13 @@ import { motion } from 'framer-motion';
 import { format } from 'date-fns';
 import ApperIcon from '@/components/ApperIcon';
 import Button from '@/components/atoms/Button';
+import TransactionHistory from '@/components/organisms/TransactionHistory';
 import { getStockStatus } from '@/services/api/productService';
 
 const ProductTable = ({ products, onEdit, onDelete, onAdjustStock }) => {
   const [sortField, setSortField] = useState('name');
-  const [sortDirection, setSortDirection] = useState('asc');
-
+const [sortDirection, setSortDirection] = useState('asc');
+  const [expandedRows, setExpandedRows] = useState(new Set());
   const handleSort = (field) => {
     if (sortField === field) {
       setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
@@ -16,8 +17,17 @@ const ProductTable = ({ products, onEdit, onDelete, onAdjustStock }) => {
       setSortField(field);
       setSortDirection('asc');
     }
-  };
+};
 
+  const toggleRowExpansion = (productId) => {
+    const newExpandedRows = new Set(expandedRows);
+    if (newExpandedRows.has(productId)) {
+      newExpandedRows.delete(productId);
+    } else {
+      newExpandedRows.add(productId);
+    }
+    setExpandedRows(newExpandedRows);
+  };
   const sortedProducts = [...products].sort((a, b) => {
     let aValue = a[sortField];
     let bValue = b[sortField];
@@ -65,7 +75,7 @@ const ProductTable = ({ products, onEdit, onDelete, onAdjustStock }) => {
       <div className="overflow-x-auto">
         <table className="min-w-full divide-y divide-slate-200">
           <thead className="bg-slate-50">
-            <tr>
+<tr>
               <th className="px-6 py-3 text-left">
                 <button
                   onClick={() => handleSort('name')}
@@ -129,77 +139,102 @@ const ProductTable = ({ products, onEdit, onDelete, onAdjustStock }) => {
             </tr>
           </thead>
           <tbody className="bg-white divide-y divide-slate-200">
-            {sortedProducts.map((product, index) => (
-              <motion.tr
-                key={product.Id}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: index * 0.05 }}
-                className="hover:bg-slate-50"
-              >
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <div>
-                    <div className="text-sm font-medium text-slate-900">{product.name}</div>
-                    {product.description && (
-                      <div className="text-sm text-slate-500 truncate max-w-xs">{product.description}</div>
-                    )}
-                  </div>
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <span className="text-sm font-mono text-slate-600 bg-slate-100 px-2 py-1 rounded">
-                    {product.sku}
-                  </span>
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <span className="text-sm text-slate-900">{product.category}</span>
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <StockBadge currentStock={product.currentStock} minimumStock={product.minimumStock} />
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <div className="text-sm text-slate-900">
-                    <span className="font-medium">{product.currentStock}</span>
-                    <span className="text-slate-500"> / {product.minimumStock} min</span>
-                  </div>
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <span className="text-sm text-slate-600">{product.location}</span>
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <span className="text-sm text-slate-600">
-                    {format(new Date(product.lastUpdated), 'MMM d, yyyy')}
-                  </span>
-                </td>
-<td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                  <div className="flex items-center justify-end space-x-2">
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => onAdjustStock(product)}
-                      className="text-slate-600 hover:text-blue-600"
-                      title="Adjust Stock"
-                    >
-                      <ApperIcon name="Package" className="w-4 h-4" />
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => onEdit(product)}
-                      className="text-slate-600 hover:text-primary-600"
-                    >
-                      <ApperIcon name="Edit" className="w-4 h-4" />
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => onDelete(product)}
-                      className="text-slate-600 hover:text-red-600"
-                    >
-                      <ApperIcon name="Trash2" className="w-4 h-4" />
-                    </Button>
-                  </div>
-                </td>
-              </motion.tr>
+{sortedProducts.map((product, index) => (
+              <React.Fragment key={product.Id}>
+                <motion.tr
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: index * 0.05 }}
+                  className="hover:bg-slate-50"
+                >
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <div>
+                      <div className="text-sm font-medium text-slate-900">{product.name}</div>
+                      {product.description && (
+                        <div className="text-sm text-slate-500 truncate max-w-xs">{product.description}</div>
+                      )}
+                    </div>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <span className="text-sm font-mono text-slate-600 bg-slate-100 px-2 py-1 rounded">
+                      {product.sku}
+                    </span>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <span className="text-sm text-slate-900">{product.category}</span>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <StockBadge currentStock={product.currentStock} minimumStock={product.minimumStock} />
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <div className="text-sm text-slate-900">
+                      <span className="font-medium">{product.currentStock}</span>
+                      <span className="text-slate-500"> / {product.minimumStock} min</span>
+                    </div>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <span className="text-sm text-slate-600">{product.location}</span>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <span className="text-sm text-slate-600">
+                      {format(new Date(product.lastUpdated), 'MMM d, yyyy')}
+                    </span>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                    <div className="flex items-center justify-end space-x-2">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => toggleRowExpansion(product.Id)}
+                        className="text-slate-600 hover:text-blue-600"
+                        title="Transaction History"
+                      >
+                        <ApperIcon 
+                          name={expandedRows.has(product.Id) ? "ChevronUp" : "ChevronDown"} 
+                          className="w-4 h-4" 
+                        />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => onAdjustStock(product)}
+                        className="text-slate-600 hover:text-blue-600"
+                        title="Adjust Stock"
+                      >
+                        <ApperIcon name="Package" className="w-4 h-4" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => onEdit(product)}
+                        className="text-slate-600 hover:text-primary-600"
+                      >
+                        <ApperIcon name="Edit" className="w-4 h-4" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => onDelete(product)}
+                        className="text-slate-600 hover:text-red-600"
+                      >
+                        <ApperIcon name="Trash2" className="w-4 h-4" />
+                      </Button>
+                    </div>
+                  </td>
+                </motion.tr>
+                {expandedRows.has(product.Id) && (
+                  <motion.tr
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: 'auto' }}
+                    exit={{ opacity: 0, height: 0 }}
+                    transition={{ duration: 0.2 }}
+                  >
+                    <td colSpan="8" className="px-6 py-4 bg-slate-50">
+                      <TransactionHistory productId={product.Id} />
+                    </td>
+                  </motion.tr>
+                )}
+              </React.Fragment>
             ))}
           </tbody>
         </table>

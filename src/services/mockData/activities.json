@@ -1,0 +1,50 @@
+[
+  {
+    "Id": 1,
+    "type": "stock_in",
+    "description": "Received shipment of wireless headphones",
+    "location": "Warehouse A",
+    "quantity": 50,
+    "timestamp": "2024-01-15T13:45:00Z"
+  },
+  {
+    "Id": 2,
+    "type": "stock_out",
+    "description": "Order fulfilled for premium keyboards",
+    "location": "Store Front",
+    "quantity": 12,
+    "timestamp": "2024-01-15T12:30:00Z"
+  },
+  {
+    "Id": 3,
+    "type": "low_stock",
+    "description": "Gaming mouse stock below threshold",
+    "location": "Warehouse B",
+    "quantity": null,
+    "timestamp": "2024-01-15T11:15:00Z"
+  },
+  {
+    "Id": 4,
+    "type": "new_product",
+    "description": "Added new smartphone model to inventory",
+    "location": "Main Warehouse",
+    "quantity": 100,
+    "timestamp": "2024-01-15T10:00:00Z"
+  },
+  {
+    "Id": 5,
+    "type": "stock_out",
+    "description": "Bulk order for office supplies",
+    "location": "Distribution Center",
+    "quantity": 200,
+    "timestamp": "2024-01-15T09:30:00Z"
+  },
+  {
+    "Id": 6,
+    "type": "stock_in",
+    "description": "Restocked tablet accessories",
+    "location": "Warehouse C",
+    "quantity": 75,
+    "timestamp": "2024-01-15T08:45:00Z"
+  }
+]

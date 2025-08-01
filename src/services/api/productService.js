@@ -164,3 +164,120 @@ export const getLocations = () => {
   const locations = [...new Set(mockProducts.map(p => p.location))];
   return locations.sort();
 };
+
+// Get low stock alerts with urgency indicators
+export const getLowStockAlerts = () => {
+  const alerts = products.filter(p => p.currentStock <= p.minimumStock)
+    .map(product => {
+      const stockRatio = product.currentStock / product.minimumStock;
+      let urgency = 'low';
+      
+      if (product.currentStock === 0) {
+        urgency = 'critical';
+      } else if (stockRatio <= 0.25) {
+        urgency = 'critical';
+      } else if (stockRatio <= 0.5) {
+        urgency = 'high';
+      } else if (stockRatio <= 0.75) {
+        urgency = 'medium';
+      }
+      
+      return {
+        ...product,
+        urgency,
+        suggestedReorder: calculateReorderQuantity(product),
+        daysUntilEmpty: Math.ceil(product.currentStock / (product.minimumStock * 0.1)) // Simplified calculation
+      };
+    })
+    .sort((a, b) => {
+      const urgencyOrder = { critical: 0, high: 1, medium: 2, low: 3 };
+      return urgencyOrder[a.urgency] - urgencyOrder[b.urgency];
+    });
+    
+  return alerts;
+};
+
+// Calculate suggested reorder quantity
+export const calculateReorderQuantity = (product) => {
+  const safetyStock = Math.ceil(product.minimumStock * 0.2); // 20% safety buffer
+  const optimalStock = product.minimumStock * 2; // Target stock level
+  const currentDeficit = Math.max(0, optimalStock - product.currentStock);
+  
+  return Math.max(currentDeficit, safetyStock);
+};
+
+// Get comprehensive stock analytics
+export const getStockAnalytics = () => {
+  const totalProducts = products.length;
+  const lowStockCount = products.filter(p => p.currentStock <= p.minimumStock && p.currentStock > 0).length;
+  const outOfStockCount = products.filter(p => p.currentStock === 0).length;
+  const inStockCount = totalProducts - lowStockCount - outOfStockCount;
+  
+  const totalValue = products.reduce((sum, p) => sum + (p.currentStock * p.unitPrice), 0);
+  
+  // Category breakdown
+  const categoryStats = {};
+  products.forEach(product => {
+    if (!categoryStats[product.category]) {
+      categoryStats[product.category] = { count: 0, value: 0 };
+    }
+    categoryStats[product.category].count++;
+    categoryStats[product.category].value += product.currentStock * product.unitPrice;
+  });
+  
+  const categoryBreakdown = Object.entries(categoryStats)
+    .map(([name, stats]) => ({ name, ...stats }))
+    .sort((a, b) => b.value - a.value);
+    
+  const topValueCategories = categoryBreakdown.slice(0, 5);
+  
+  return {
+    totalProducts,
+    lowStockCount,
+    outOfStockCount,
+    inStockCount,
+    totalValue,
+    categoryBreakdown,
+    topValueCategories,
+    stockTurnoverRate: 0.75, // Placeholder - would calculate from historical data
+    averageStockLevel: Math.round(products.reduce((sum, p) => sum + p.currentStock, 0) / totalProducts)
+  };
+};
+
+// Export reports data
+export const exportReportsData = (products, lowStockAlerts, analytics) => {
+  const reportData = {
+    generatedAt: new Date().toISOString(),
+    summary: {
+      totalProducts: analytics.totalProducts,
+      lowStockCount: analytics.lowStockCount,
+      outOfStockCount: analytics.outOfStockCount,
+      totalValue: analytics.totalValue
+    },
+    lowStockAlerts: lowStockAlerts.map(alert => ({
+      name: alert.name,
+      sku: alert.sku,
+      currentStock: alert.currentStock,
+      minimumStock: alert.minimumStock,
+      urgency: alert.urgency,
+      suggestedReorder: alert.suggestedReorder,
+      location: alert.location
+    })),
+    categoryBreakdown: analytics.categoryBreakdown
+  };
+  
+  // Create downloadable JSON file
+  const dataStr = JSON.stringify(reportData, null, 2);
+  const dataBlob = new Blob([dataStr], { type: 'application/json' });
+  const url = URL.createObjectURL(dataBlob);
+  
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = `inventory-reports-${new Date().toISOString().split('T')[0]}.json`;
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  URL.revokeObjectURL(url);
+  
+  return true;
+};

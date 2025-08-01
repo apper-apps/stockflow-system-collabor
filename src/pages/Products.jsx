@@ -6,15 +6,16 @@ import Button from "@/components/atoms/Button";
 import Input from "@/components/atoms/Input";
 import ProductTable from "@/components/organisms/ProductTable";
 import ProductModal from "@/components/organisms/ProductModal";
+import StockAdjustmentModal from "@/components/organisms/StockAdjustmentModal";
 import { getAllProducts, deleteProduct } from "@/services/api/productService";
 const Products = () => {
-  const [products, setProducts] = useState([]);
+const [products, setProducts] = useState([]);
   const [filteredProducts, setFilteredProducts] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isStockModalOpen, setIsStockModalOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
-
   // Load products on component mount
   useEffect(() => {
     loadProducts();
@@ -50,9 +51,14 @@ const Products = () => {
     setIsModalOpen(true);
   };
 
-  const handleEditProduct = (product) => {
+const handleEditProduct = (product) => {
     setSelectedProduct(product);
     setIsModalOpen(true);
+  };
+
+  const handleAdjustStock = (product) => {
+    setSelectedProduct(product);
+    setIsStockModalOpen(true);
   };
 
   const handleDeleteProduct = async (product) => {
@@ -146,18 +152,26 @@ const Products = () => {
             <ApperIcon name="Loader2" className="w-8 h-8 animate-spin text-primary-600" />
           </div>
         ) : (
-          <ProductTable
+<ProductTable
             products={filteredProducts}
             onEdit={handleEditProduct}
             onDelete={handleDeleteProduct}
+            onAdjustStock={handleAdjustStock}
           />
         )}
       </motion.div>
 
       {/* Product Modal */}
-      <ProductModal
+<ProductModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
+        product={selectedProduct}
+        onSuccess={handleModalSuccess}
+      />
+      
+      <StockAdjustmentModal
+        isOpen={isStockModalOpen}
+        onClose={() => setIsStockModalOpen(false)}
         product={selectedProduct}
         onSuccess={handleModalSuccess}
       />

@@ -115,6 +115,33 @@ export const deleteProduct = (id) => {
   return true;
 };
 
+export const adjustStock = (productId, adjustment, reason, notes = '') => {
+  const productIndex = products.findIndex(p => p.Id === productId);
+  if (productIndex === -1) {
+    throw new Error('Product not found');
+  }
+
+  const product = products[productIndex];
+  const newStock = product.currentStock + adjustment;
+  
+  if (newStock < 0) {
+    throw new Error('Stock cannot be negative');
+  }
+
+  // Update the product stock
+  products[productIndex] = {
+    ...product,
+    currentStock: newStock,
+    lastUpdated: new Date().toISOString()
+  };
+
+  // Log the adjustment (in a real app, this would go to an audit log)
+  console.log(`Stock adjusted for ${product.name}: ${adjustment > 0 ? '+' : ''}${adjustment} (Reason: ${reason})`);
+  
+  toast.success(`Stock adjusted successfully. New quantity: ${newStock}`);
+  return products[productIndex];
+};
+
 // Get stock status
 export const getStockStatus = (currentStock, minimumStock) => {
   if (currentStock === 0) {

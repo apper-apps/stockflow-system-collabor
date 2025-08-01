@@ -5,7 +5,7 @@ import ApperIcon from '@/components/ApperIcon';
 import Button from '@/components/atoms/Button';
 import { getStockStatus } from '@/services/api/productService';
 
-const ProductTable = ({ products, onEdit, onDelete }) => {
+const ProductTable = ({ products, onEdit, onDelete, onAdjustStock }) => {
   const [sortField, setSortField] = useState('name');
   const [sortDirection, setSortDirection] = useState('asc');
 
@@ -170,8 +170,17 @@ const ProductTable = ({ products, onEdit, onDelete }) => {
                     {format(new Date(product.lastUpdated), 'MMM d, yyyy')}
                   </span>
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+<td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                   <div className="flex items-center justify-end space-x-2">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => onAdjustStock(product)}
+                      className="text-slate-600 hover:text-blue-600"
+                      title="Adjust Stock"
+                    >
+                      <ApperIcon name="Package" className="w-4 h-4" />
+                    </Button>
                     <Button
                       variant="ghost"
                       size="sm"

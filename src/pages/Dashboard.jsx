@@ -1,45 +1,64 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { motion } from "framer-motion";
+import useInterval from "@/hooks/useInterval";
+import metricsService from "@/services/api/metricsService";
+import activityService from "@/services/api/activityService";
 import MetricCard from "@/components/molecules/MetricCard";
 import RecentActivity from "@/components/organisms/RecentActivity";
 import Loading from "@/components/ui/Loading";
 import Error from "@/components/ui/Error";
 import Empty from "@/components/ui/Empty";
-import metricsService from "@/services/api/metricsService";
-import activityService from "@/services/api/activityService";
-
-const Dashboard = () => {
+function Dashboard() {
   const [metrics, setMetrics] = useState(null);
   const [activities, setActivities] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [isUpdating, setIsUpdating] = useState(false);
 
-  const loadDashboardData = async () => {
+  async function loadDashboardData(showLoadingState = true) {
     try {
-      setIsLoading(true);
+      if (showLoadingState) {
+        setLoading(true);
+      } else {
+        setIsUpdating(true);
+      }
       setError(null);
 
       const [metricsData, activitiesData] = await Promise.all([
         metricsService.getMetrics(),
-        activityService.getRecentActivities(6)
+        activityService.getActivities()
       ]);
 
       setMetrics(metricsData);
       setActivities(activitiesData);
     } catch (err) {
+console.error('Dashboard loading error:', err);
       setError(err.message);
-      toast.error("Failed to load dashboard data");
+      if (showLoadingState) {
+        toast.error(`Failed to load dashboard: ${err.message}`);
+      }
     } finally {
-      setIsLoading(false);
+      if (showLoadingState) {
+        setLoading(false);
+      } else {
+        setIsUpdating(false);
+      }
     }
-  };
+  }
 
-  useEffect(() => {
+  // Real-time updates every 30 seconds
+  useInterval(() => {
+    if (!loading && !error) {
+      loadDashboardData(false);
+    }
+  }, 30000);
+
+useEffect(() => {
     loadDashboardData();
   }, []);
 
-  if (isLoading) {
+  if (loading) {
     return <Loading />;
   }
 

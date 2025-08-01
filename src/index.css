@@ -59,4 +59,51 @@
   .Toastify__progress-bar--warning {
     @apply bg-amber-500;
   }
+
+  /* Metric Card Enhanced Animations */
+  .metric-card-container {
+    @apply transition-all duration-300 ease-out;
+  }
+
+  .metric-card-container:hover {
+    @apply shadow-xl;
+    box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+    transform: translateY(-4px) scale(1.02);
+  }
+
+  .metric-card-container:hover::before {
+    content: '';
+    @apply absolute inset-0 bg-gradient-to-br from-white/50 to-transparent rounded-lg pointer-events-none;
+  }
+
+  .metric-card-glow {
+    @apply relative overflow-hidden;
+  }
+
+  .metric-card-glow::after {
+    content: '';
+    @apply absolute inset-0 opacity-0 transition-opacity duration-300;
+    background: linear-gradient(45deg, transparent 30%, rgba(255,255,255,0.1) 50%, transparent 70%);
+    transform: translateX(-100%);
+  }
+
+  .metric-card-glow:hover::after {
+    @apply opacity-100;
+    animation: shimmer 0.6s ease-out;
+    transform: translateX(100%);
+  }
+
+  @keyframes shimmer {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(100%); }
+  }
+
+  @keyframes pulse-glow {
+    0%, 100% { box-shadow: 0 0 5px rgba(59, 130, 246, 0.3); }
+    50% { box-shadow: 0 0 20px rgba(59, 130, 246, 0.6); }
+  }
+
+  .metric-updating {
+    animation: pulse-glow 1.5s ease-in-out infinite;
+  }
 }

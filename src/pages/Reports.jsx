@@ -1,49 +1,67 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { toast } from "react-toastify";
+import useInterval from "@/hooks/useInterval";
+import { exportReportsData, getAllProducts, getLowStockAlerts, getStockAnalytics } from "@/services/api/productService";
 import ApperIcon from "@/components/ApperIcon";
-import Card from "@/components/atoms/Card";
-import Button from "@/components/atoms/Button";
 import MetricCard from "@/components/molecules/MetricCard";
 import Loading from "@/components/ui/Loading";
-import { 
-  getAllProducts,
-  getLowStockAlerts,
-  getStockAnalytics,
-  exportReportsData
-} from "@/services/api/productService";
-
-const Reports = () => {
+import Button from "@/components/atoms/Button";
+import Card from "@/components/atoms/Card";
+import Categories from "@/pages/Categories";
+import Dashboard from "@/pages/Dashboard";
+function Reports() {
+  const [allProducts, setAllProducts] = useState([]);
+  const [alerts, setAlerts] = useState([]);
+  const [analytics, setAnalytics] = useState(null);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('overview');
-  const [products, setProducts] = useState([]);
-  const [lowStockAlerts, setLowStockAlerts] = useState([]);
-  const [stockAnalytics, setStockAnalytics] = useState({});
+  const [isUpdating, setIsUpdating] = useState(false);
 
-  useEffect(() => {
-    const loadData = async () => {
-      try {
+  async function loadData(showLoadingState = true) {
+    try {
+      if (showLoadingState) {
         setLoading(true);
-        const allProducts = getAllProducts();
-        const alerts = getLowStockAlerts();
-        const analytics = getStockAnalytics();
-        
-        setProducts(allProducts);
-        setLowStockAlerts(alerts);
-        setStockAnalytics(analytics);
-      } catch (error) {
-        toast.error('Failed to load reports data');
-      } finally {
-        setLoading(false);
+      } else {
+        setIsUpdating(true);
       }
-    };
-    
+const [products, stockAlerts, stockAnalytics] = await Promise.all([
+        getAllProducts(),
+        getLowStockAlerts(),
+        getStockAnalytics()
+      ]);
+
+      setAllProducts(products);
+      setAlerts(stockAlerts);
+      setAnalytics(stockAnalytics);
+    } catch (error) {
+      console.error('Failed to load reports data:', error);
+      if (showLoadingState) {
+        toast.error('Failed to load reports data');
+      }
+    } finally {
+      if (showLoadingState) {
+        setLoading(false);
+      } else {
+        setIsUpdating(false);
+      }
+    }
+}
+
+  // Real-time analytics updates every 45 seconds
+  useInterval(() => {
+    if (!loading && activeTab === 'analytics') {
+      loadData(false);
+    }
+  }, 45000);
+
+useEffect(() => {
     loadData();
   }, []);
 
   const handleExportReports = () => {
     try {
-      exportReportsData(products, lowStockAlerts, stockAnalytics);
+      exportReportsData(allProducts, alerts, analytics);
       toast.success('Reports exported successfully');
     } catch (error) {
       toast.error('Failed to export reports');
@@ -134,38 +152,38 @@ const Reports = () => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
-        >
+>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
             <MetricCard
               title="Total Products"
-              value={stockAnalytics.totalProducts || 0}
+              value={analytics?.totalProducts || 0}
               icon="Package"
               color="blue"
             />
             <MetricCard
               title="Low Stock Items"
-              value={stockAnalytics.lowStockCount || 0}
+              value={analytics?.lowStockCount || 0}
               icon="AlertTriangle"
               color="red"
             />
             <MetricCard
               title="Out of Stock"
-              value={stockAnalytics.outOfStockCount || 0}
+              value={analytics?.outOfStockCount || 0}
               icon="XCircle"
               color="red"
             />
             <MetricCard
               title="Total Value"
-              value={`$${(stockAnalytics.totalValue || 0).toLocaleString()}`}
+              value={`$${(analytics?.totalValue || 0).toLocaleString()}`}
               icon="DollarSign"
               color="green"
             />
           </div>
 
-          <Card className="p-6">
+<Card className="p-6">
             <h3 className="text-lg font-semibold text-slate-900 mb-4">Stock Distribution by Category</h3>
             <div className="space-y-4">
-              {stockAnalytics.categoryBreakdown?.map((category) => (
+              {analytics?.categoryBreakdown?.map((category) => (
                 <div key={category.name} className="flex items-center justify-between">
                   <div className="flex items-center space-x-3">
                     <div className="w-4 h-4 bg-primary-500 rounded"></div>
@@ -192,9 +210,9 @@ const Reports = () => {
           <Card className="p-6 mb-6">
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-lg font-semibold text-slate-900">Low Stock Alerts Dashboard</h3>
-              <div className="flex items-center space-x-2 text-sm text-slate-600">
+<div className="flex items-center space-x-2 text-sm text-slate-600">
                 <ApperIcon name="AlertTriangle" className="w-4 h-4" />
-                <span>{lowStockAlerts.length} items need attention</span>
+                <span>{alerts.length} items need attention</span>
               </div>
             </div>
             
@@ -211,7 +229,7 @@ const Reports = () => {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100">
-                  {lowStockAlerts.map((alert, index) => (
+                  {alerts.map((alert, index) => (
                     <motion.tr
                       key={alert.Id}
                       initial={{ opacity: 0, x: -20 }}
@@ -249,7 +267,7 @@ const Reports = () => {
               </table>
             </div>
             
-            {lowStockAlerts.length === 0 && (
+{alerts.length === 0 && (
               <div className="text-center py-8">
                 <ApperIcon name="CheckCircle" className="w-12 h-12 text-emerald-500 mx-auto mb-4" />
                 <h3 className="text-lg font-medium text-slate-900 mb-2">All Stock Levels Good</h3>
@@ -276,21 +294,21 @@ const Reports = () => {
                     <div className="w-3 h-3 bg-emerald-500 rounded-full"></div>
                     <span className="text-emerald-800 font-medium">In Stock</span>
                   </div>
-                  <span className="text-emerald-900 font-semibold">{stockAnalytics.inStockCount || 0}</span>
+<span className="text-emerald-900 font-semibold">{analytics?.inStockCount || 0}</span>
                 </div>
                 <div className="flex items-center justify-between p-3 bg-amber-50 rounded-lg">
                   <div className="flex items-center space-x-3">
                     <div className="w-3 h-3 bg-amber-500 rounded-full"></div>
                     <span className="text-amber-800 font-medium">Low Stock</span>
                   </div>
-                  <span className="text-amber-900 font-semibold">{stockAnalytics.lowStockCount || 0}</span>
+                  <span className="text-amber-900 font-semibold">{analytics?.lowStockCount || 0}</span>
                 </div>
                 <div className="flex items-center justify-between p-3 bg-red-50 rounded-lg">
                   <div className="flex items-center space-x-3">
                     <div className="w-3 h-3 bg-red-500 rounded-full"></div>
                     <span className="text-red-800 font-medium">Out of Stock</span>
                   </div>
-                  <span className="text-red-900 font-semibold">{stockAnalytics.outOfStockCount || 0}</span>
+                  <span className="text-red-900 font-semibold">{analytics?.outOfStockCount || 0}</span>
                 </div>
               </div>
             </Card>
@@ -298,7 +316,7 @@ const Reports = () => {
             <Card className="p-6">
               <h3 className="text-lg font-semibold text-slate-900 mb-4">Top Value Categories</h3>
               <div className="space-y-3">
-                {stockAnalytics.topValueCategories?.map((category, index) => (
+                {analytics?.topValueCategories?.map((category, index) => (
                   <div key={category.name} className="flex items-center justify-between">
                     <div className="flex items-center space-x-3">
                       <div className="w-6 h-6 bg-primary-100 text-primary-600 rounded-full flex items-center justify-center text-xs font-medium">

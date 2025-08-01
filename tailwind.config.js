@@ -4,9 +4,12 @@ export default {
     "./index.html",
     "./src/**/*.{js,ts,jsx,tsx}",
   ],
-  theme: {
+theme: {
     extend: {
       colors: {
+        border: 'hsl(var(--border))',
+        background: 'hsl(var(--background))',
+        foreground: 'hsl(var(--foreground))',
         primary: {
           50: '#eff6ff',
           100: '#dbeafe',
@@ -18,6 +21,8 @@ export default {
           700: '#1e40af',
           800: '#1e3a8a',
           900: '#1e3a8a',
+          DEFAULT: '#2563eb',
+          foreground: '#ffffff',
         },
         secondary: {
           50: '#f8fafc',
@@ -30,6 +35,8 @@ export default {
           700: '#334155',
           800: '#1e293b',
           900: '#0f172a',
+          DEFAULT: '#64748b',
+          foreground: '#ffffff',
         },
         accent: {
           50: '#faf5ff',
@@ -42,6 +49,8 @@ export default {
           700: '#6d28d9',
           800: '#5b21b6',
           900: '#4c1d95',
+          DEFAULT: '#8b5cf6',
+          foreground: '#ffffff',
         }
       },
       fontFamily: {

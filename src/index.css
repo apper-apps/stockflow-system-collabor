@@ -1,5 +1,4 @@
 @import 'react-toastify/dist/ReactToastify.css';
-@import 'react-toastify/dist/ReactToastify.css';
 
 @tailwind base;
 @tailwind components;
@@ -7,11 +6,11 @@
 
 @layer base {
   * {
-    @apply border-border;
+    @apply border-gray-200;
   }
   
   body {
-    @apply bg-background text-foreground;
+    @apply bg-slate-50 text-slate-900 font-inter;
     font-feature-settings: "rlig" 1, "calt" 1;
   }
 }
@@ -19,33 +18,34 @@
 @layer components {
   /* Toast Container Customization */
   .Toastify__toast-container {
-    width: 320px;
+    width: auto;
+    max-width: 400px;
   }
 
   .Toastify__toast {
-    @apply rounded-lg shadow-lg;
+    @apply rounded-lg shadow-lg font-inter;
     min-height: 64px;
     padding: 16px;
   }
 
   .Toastify__toast--success {
-    @apply bg-green-50 text-green-800 border border-green-200;
+    @apply bg-emerald-50 text-emerald-900 border border-emerald-200;
   }
 
   .Toastify__toast--error {
-    @apply bg-red-50 text-red-800 border border-red-200;
+    @apply bg-red-50 text-red-900 border border-red-200;
   }
 
   .Toastify__toast--info {
-    @apply bg-blue-50 text-blue-800 border border-blue-200;
+    @apply bg-blue-50 text-blue-900 border border-blue-200;
   }
 
   .Toastify__toast--warning {
-    @apply bg-yellow-50 text-yellow-800 border border-yellow-200;
+    @apply bg-amber-50 text-amber-900 border border-amber-200;
   }
 
   .Toastify__progress-bar--success {
-    @apply bg-green-500;
+    @apply bg-emerald-500;
   }
 
   .Toastify__progress-bar--error {
@@ -57,61 +57,6 @@
   }
 
   .Toastify__progress-bar--warning {
-    @apply bg-yellow-500;
+    @apply bg-amber-500;
   }
-}
-@tailwind components;
-@tailwind utilities;
-
-@layer base {
-  * {
-    @apply border-border;
-  }
-  body {
-    @apply bg-slate-50 text-slate-900 font-inter;
-  }
-}
-
-/* Toast customization */
-.Toastify__toast-container {
-  width: auto;
-  max-width: 400px;
-}
-
-.Toastify__toast {
-  @apply rounded-lg shadow-lg font-inter;
-  min-height: 64px;
-  padding: 16px;
-}
-
-.Toastify__toast--success {
-  @apply bg-emerald-50 text-emerald-900 border border-emerald-200;
-}
-
-.Toastify__toast--error {
-  @apply bg-red-50 text-red-900 border border-red-200;
-}
-
-.Toastify__toast--info {
-  @apply bg-blue-50 text-blue-900 border border-blue-200;
-}
-
-.Toastify__toast--warning {
-  @apply bg-amber-50 text-amber-900 border border-amber-200;
-}
-
-.Toastify__progress-bar--success {
-  @apply bg-emerald-500;
-}
-
-.Toastify__progress-bar--error {
-  @apply bg-red-500;
-}
-
-.Toastify__progress-bar--info {
-  @apply bg-blue-500;
-}
-
-.Toastify__progress-bar--warning {
-  @apply bg-amber-500;
 }
